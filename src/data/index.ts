@@ -3,6 +3,7 @@ import { chapters01to04 } from "./chapters/01-04";
 import { chapters05to08 } from "./chapters/05-08";
 import { chapters09to12 } from "./chapters/09-12";
 import { getVerb, VERBS } from "./verbs";
+import { url } from "../lib/url";
 
 export const CHAPTERS: Chapter[] = [...chapters01to04, ...chapters05to08, ...chapters09to12];
 
@@ -19,7 +20,7 @@ export function slugify(s: string): string {
     .replace(/^-|-$/g, "");
 }
 
-export const chapterHref = (c: Chapter) => `/kapitel/${c.slug}`;
+export const chapterHref = (c: Chapter) => url(`/kapitel/${c.slug}`);
 export const anchor = {
   theme: (id: string) => `thema-${id}`,
   grammar: (id: string) => `grammatik-${id}`,

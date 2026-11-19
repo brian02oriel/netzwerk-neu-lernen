@@ -5,6 +5,7 @@ import SearchBar from "../components/SearchBar";
 import Sidebar from "../components/Sidebar";
 import MobileNav from "../components/MobileNav";
 import ThemeToggle from "../components/ThemeToggle";
+import { url, stripBase } from "../lib/url";
 
 interface Props {
   title: string;
@@ -17,11 +18,12 @@ const { title, description = "Resumen de Netzwerk neu A1 por capítulos y temas 
   Astro.props;
 const searchIndex = buildSearchIndex();
 const path = Astro.url.pathname;
+const rel = stripBase(path);
 const links = [
-  { href: "/", label: "Kapitel" },
-  { href: "/verben", label: "Verben" },
-  { href: "/wortschatz", label: "Wortschatz" },
-  { href: "/grammatik", label: "Grammatik" },
+  { to: "/", label: "Kapitel" },
+  { to: "/verben", label: "Verben" },
+  { to: "/wortschatz", label: "Wortschatz" },
+  { to: "/grammatik", label: "Grammatik" },
 ];
 ---
 
@@ -31,7 +33,7 @@ const links = [
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={url("/favicon.svg")} />
     <title>{title} · Netzwerk neu A1</title>
     <script is:inline>
       try {
@@ -48,7 +50,7 @@ const links = [
     <header class="sticky top-0 z-30 border-b border-line bg-bg/90 backdrop-blur">
       <div class="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:px-6">
         <MobileNav client:load nav={NAV} path={path} />
-        <a href="/" class="flex shrink-0 items-center gap-2">
+        <a href={url("/")} class="flex shrink-0 items-center gap-2">
           <span class="grid size-8 place-items-center rounded-lg bg-ink text-xs font-extrabold text-bg">A1</span>
           <span class="hidden text-sm leading-tight font-extrabold sm:block">Netzwerk neu<br /><span class="font-medium text-muted">Lernhilfe</span></span>
         </a>
@@ -56,10 +58,10 @@ const links = [
           {
             links.map((l) => (
               <a
-                href={l.href}
+                href={url(l.to)}
                 class:list={[
                   "rounded-md px-3 py-1.5 text-sm font-semibold transition-colors hover:bg-surface-2",
-                  (l.href === "/" ? path === "/" || path.startsWith("/kapitel") : path.startsWith(l.href))
+                  (l.to === "/" ? rel === "/" || rel.startsWith("/kapitel") : rel.startsWith(l.to))
                     ? "text-ink"
                     : "text-muted",
                 ]}

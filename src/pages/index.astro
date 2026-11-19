@@ -2,13 +2,14 @@
 import Layout from "../layouts/Layout.astro";
 import SearchBar from "../components/SearchBar";
 import { ALL_NOUNS, ALL_VERBS, CHAPTERS, chapterHref } from "../data";
+import { url } from "../lib/url";
 
 const grammarCount = CHAPTERS.reduce((n, c) => n + c.grammar.length, 0);
 const stats = [
   { n: CHAPTERS.length, label: "capítulos", href: "#kapitel" },
-  { n: ALL_VERBS.length, label: "verbos conjugados", href: "/verben" },
-  { n: ALL_NOUNS.length, label: "sustantivos", href: "/wortschatz" },
-  { n: grammarCount, label: "temas de gramática", href: "/grammatik" },
+  { n: ALL_VERBS.length, label: "verbos conjugados", href: url("/verben") },
+  { n: ALL_NOUNS.length, label: "sustantivos", href: url("/wortschatz") },
+  { n: grammarCount, label: "temas de gramática", href: url("/grammatik") },
 ];
 ---
 

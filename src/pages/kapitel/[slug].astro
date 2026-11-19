@@ -1,4 +1,5 @@
 ---
+import { url } from "../../lib/url";
 import type { GetStaticPaths } from "astro";
 import Layout from "../../layouts/Layout.astro";
 import GrammarBlock from "../../components/GrammarBlock.astro";
@@ -29,7 +30,7 @@ const toc = [
 
 <Layout title={`Kapitel ${c.number}: ${c.title}`} description={c.summary}>
   <nav class="text-sm font-semibold text-muted" aria-label="Ruta">
-    <a href="/" class="hover:text-ink">Kapitel</a> <span aria-hidden="true">/</span> <span>{c.number}</span>
+    <a href={url("/")} class="hover:text-ink">Kapitel</a> <span aria-hidden="true">/</span> <span>{c.number}</span>
   </nav>
 
   <header class="mt-4">

@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import type { NavChapter } from "../data";
 import Sidebar from "./Sidebar";
+import { url } from "../lib/url";
 
 const LINKS = [
-  { href: "/", label: "Kapitel" },
-  { href: "/verben", label: "Verben" },
-  { href: "/wortschatz", label: "Wortschatz" },
-  { href: "/grammatik", label: "Grammatik" },
+  { href: url("/"), label: "Kapitel" },
+  { href: url("/verben"), label: "Verben" },
+  { href: url("/wortschatz"), label: "Wortschatz" },
+  { href: url("/grammatik"), label: "Grammatik" },
 ];
 
 export default function MobileNav({ nav, path }: { nav: NavChapter[]; path: string }) {
