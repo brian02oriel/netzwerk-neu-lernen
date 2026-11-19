@@ -1,0 +1,9 @@
+---
+/** Renders a string where **text** becomes <strong>. Escapes everything else. */
+interface Props {
+  text: string;
+}
+const parts = Astro.props.text.split(/(\*\*[^*]+\*\*)/g);
+---
+
+{parts.map((p) => (p.startsWith("**") && p.endsWith("**") ? <strong class="font-bold">{p.slice(2, -2)}</strong> : p))}

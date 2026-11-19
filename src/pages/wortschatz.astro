@@ -1,0 +1,27 @@
+---
+import Layout from "../layouts/Layout.astro";
+import NounList, { type NounRow } from "../components/NounList";
+import { ALL_NOUNS, anchor, chapterHref } from "../data";
+
+const nouns: NounRow[] = ALL_NOUNS.map((n) => ({
+  de: n.de,
+  article: n.article,
+  plural: n.plural,
+  es: n.es,
+  chapter: n.chapter.number,
+  href: `${chapterHref(n.chapter)}#${anchor.noun(n.de)}`,
+  theme: n.themeTitle,
+}));
+---
+
+<Layout title="Wortschatz" description="Sustantivos de Netzwerk neu A1 con artículo, plural y traducción al español.">
+  <header class="mb-8">
+    <p class="text-sm font-extrabold tracking-wider text-muted uppercase">Wortschatz</p>
+    <h1 class="mt-1 text-4xl font-extrabold sm:text-5xl">Nomen</h1>
+    <p class="mt-2 max-w-prose text-lg text-muted">
+      Todos los sustantivos con su artículo, plural y traducción al español. Filtra por artículo para practicar el
+      género, o activa el modo repaso para ocultar las traducciones.
+    </p>
+  </header>
+  <NounList client:load nouns={nouns} />
+</Layout>

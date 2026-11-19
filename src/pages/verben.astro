@@ -1,0 +1,22 @@
+---
+import Layout from "../layouts/Layout.astro";
+import VerbList from "../components/VerbList";
+import { ALL_VERBS, anchor, chapterHref } from "../data";
+import { toVerbView } from "../lib/verbView";
+
+const verbs = ALL_VERBS.map((v) =>
+  toVerbView(v, { number: v.chapter.number, href: chapterHref(v.chapter) }, anchor.verb(v.inf)),
+);
+---
+
+<Layout title="Verben" description="Todos los verbos de Netzwerk neu A1 con traducción al español y conjugación.">
+  <header class="mb-8">
+    <p class="text-sm font-extrabold tracking-wider text-muted uppercase">Wortschatz</p>
+    <h1 class="mt-1 text-4xl font-extrabold sm:text-5xl">Verben</h1>
+    <p class="mt-2 max-w-prose text-lg text-muted">
+      Todos los verbos del nivel A1 con su traducción, presente, Perfekt, Präteritum (cuando es relevante en A1) e
+      imperativo. Puedes buscar también por una forma conjugada, por ejemplo «nimmst» o «war».
+    </p>
+  </header>
+  <VerbList client:load verbs={verbs} />
+</Layout>

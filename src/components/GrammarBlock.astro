@@ -1,0 +1,68 @@
+---
+import type { Grammar } from "../data/types";
+import Rich from "./Rich.astro";
+
+interface Props {
+  grammar: Grammar;
+  id: string;
+}
+const { grammar: g, id } = Astro.props;
+---
+
+<section id={id} class="scroll-mt-24 rounded-2xl border border-line bg-surface p-5 sm:p-7">
+  <p class="text-xs font-extrabold tracking-wider text-muted uppercase">Grammatik</p>
+  <h3 class="mt-1 text-2xl font-extrabold">{g.title}</h3>
+  <p class="font-semibold text-muted">{g.titleEs}</p>
+
+  <div class="mt-4 max-w-prose space-y-3 leading-relaxed">
+    {g.explanation.map((p) => <p><Rich text={p} /></p>)}
+  </div>
+
+  {
+    g.table && (
+      <div class="mt-5 overflow-x-auto rounded-xl border border-line">
+        <table class="w-full text-left text-sm">
+          <thead class="bg-surface-2">
+            <tr>
+              {g.table.headers.map((h) => (
+                <th class="px-3 py-2 font-extrabold whitespace-nowrap">{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-line">
+            {g.table.rows.map((row) => (
+              <tr>
+                {row.map((cell, i) => (
+                  <td class:list={["px-3 py-2 whitespace-nowrap", i === 0 ? "font-semibold text-muted" : "font-medium"]}>
+                    <Rich text={cell} />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+
+  <ul class="mt-5 space-y-2">
+    {
+      g.examples.map((ex) => (
+        <li class="border-l-2 border-ink pl-3">
+          <span class="font-semibold">{ex.de}</span>
+          <br />
+          <span class="text-sm text-muted">{ex.es}</span>
+        </li>
+      ))
+    }
+  </ul>
+
+  {
+    g.tip && (
+      <p class="mt-5 rounded-xl bg-surface-2 px-4 py-3 text-sm">
+        <strong class="font-extrabold">Tipp: </strong>
+        <Rich text={g.tip} />
+      </p>
+    )
+  }
+</section>

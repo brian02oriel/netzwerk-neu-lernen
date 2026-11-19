@@ -1,0 +1,76 @@
+---
+import Layout from "../layouts/Layout.astro";
+import SearchBar from "../components/SearchBar";
+import { ALL_NOUNS, ALL_VERBS, CHAPTERS, chapterHref } from "../data";
+
+const grammarCount = CHAPTERS.reduce((n, c) => n + c.grammar.length, 0);
+const stats = [
+  { n: CHAPTERS.length, label: "capítulos", href: "#kapitel" },
+  { n: ALL_VERBS.length, label: "verbos conjugados", href: "/verben" },
+  { n: ALL_NOUNS.length, label: "sustantivos", href: "/wortschatz" },
+  { n: grammarCount, label: "temas de gramática", href: "/grammatik" },
+];
+---
+
+<Layout title="Inicio" wide>
+  <section class="mx-auto max-w-3xl pt-6 pb-12 text-center sm:pt-12">
+    <p class="text-sm font-bold tracking-wider text-muted uppercase">Deutsch lernen · Niveau A1</p>
+    <h1 class="mt-3 text-4xl font-extrabold sm:text-6xl">Netzwerk neu A1, capítulo a capítulo</h1>
+    <p class="mx-auto mt-5 max-w-xl text-lg text-muted">
+      Vocabulario con traducción al español, verbos con todas sus conjugaciones, gramática explicada y ejercicios
+      para practicar, organizados según los temas del Kursbuch y el Übungsbuch.
+    </p>
+    <div class="mt-8 text-left">
+      <SearchBar client:load items={[]} variant="hero" />
+    </div>
+    <p class="mt-3 text-sm text-muted">
+      Pulsa <kbd class="rounded border border-line bg-surface px-1.5 py-0.5 text-xs font-semibold">/</kbd> en cualquier página para buscar.
+    </p>
+  </section>
+
+  <section class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+    {
+      stats.map((s) => (
+        <a href={s.href} class="rounded-2xl border border-line bg-surface p-5 transition-colors hover:border-ink/40">
+          <div class="text-3xl font-extrabold tabular-nums">{s.n}</div>
+          <div class="text-sm font-semibold text-muted">{s.label}</div>
+        </a>
+      ))
+    }
+  </section>
+
+  <section id="kapitel" class="mt-14 scroll-mt-24">
+    <h2 class="text-2xl font-extrabold sm:text-3xl">Kapitel</h2>
+    <p class="mt-1 text-muted">Elige un capítulo para ver sus temas, vocabulario, verbos, gramática y ejercicios.</p>
+    <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        CHAPTERS.map((c) => (
+          <a
+            href={chapterHref(c)}
+            class="group flex flex-col rounded-2xl border border-line bg-surface p-6 transition-all hover:-translate-y-0.5 hover:border-ink/40 hover:shadow-lg"
+          >
+            <div class="flex items-baseline justify-between">
+              <span class="text-5xl font-extrabold text-ink/15 tabular-nums transition-colors group-hover:text-ink/30">
+                {String(c.number).padStart(2, "0")}
+              </span>
+              <span class="text-xs font-bold text-muted">
+                {c.verbs.length} verbos · {c.themes.reduce((n, t) => n + t.nouns.length, 0)} palabras
+              </span>
+            </div>
+            <h3 class="mt-3 text-xl font-extrabold">{c.title}</h3>
+            <p class="font-semibold text-muted">{c.titleEs}</p>
+            <p class="mt-3 text-sm leading-relaxed text-muted">{c.summary}</p>
+            <ul class="mt-4 flex flex-wrap gap-1.5">
+              {c.themes.map((t) => (
+                <li class="rounded-full bg-surface-2 px-2.5 py-0.5 text-xs font-semibold">{t.title}</li>
+              ))}
+              {c.grammar.map((g) => (
+                <li class="rounded-full border border-line px-2.5 py-0.5 text-xs font-semibold text-muted">{g.title}</li>
+              ))}
+            </ul>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</Layout>

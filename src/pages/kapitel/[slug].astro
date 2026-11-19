@@ -1,0 +1,177 @@
+---
+import type { GetStaticPaths } from "astro";
+import Layout from "../../layouts/Layout.astro";
+import GrammarBlock from "../../components/GrammarBlock.astro";
+import VerbCard from "../../components/VerbCard";
+import Quiz from "../../components/Quiz";
+import { CHAPTERS, anchor, chapterHref } from "../../data";
+import { getVerb } from "../../data/verbs";
+import { toVerbView } from "../../lib/verbView";
+
+export const getStaticPaths = (() =>
+  CHAPTERS.map((c, i) => ({
+    params: { slug: c.slug },
+    props: { chapter: c, prev: CHAPTERS[i - 1], next: CHAPTERS[i + 1] },
+  }))) satisfies GetStaticPaths;
+
+const { chapter: c, prev, next } = Astro.props;
+const href = chapterHref(c);
+const verbs = c.verbs.map((inf) => toVerbView(getVerb(inf), { number: c.number, href }, anchor.verb(inf)));
+
+const toc = [
+  ...c.themes.map((t) => ({ label: t.title, id: anchor.theme(t.id) })),
+  { label: "Verben", id: "verben" },
+  ...c.grammar.map((g) => ({ label: g.title, id: anchor.grammar(g.id) })),
+  { label: "Aussprache", id: "aussprache" },
+  { label: "Übungen", id: "uebungen" },
+];
+---
+
+<Layout title={`Kapitel ${c.number}: ${c.title}`} description={c.summary}>
+  <nav class="text-sm font-semibold text-muted" aria-label="Ruta">
+    <a href="/" class="hover:text-ink">Kapitel</a> <span aria-hidden="true">/</span> <span>{c.number}</span>
+  </nav>
+
+  <header class="mt-4">
+    <p class="text-sm font-extrabold tracking-wider text-muted uppercase">Kapitel {c.number}</p>
+    <h1 class="mt-1 text-4xl font-extrabold sm:text-5xl">{c.title}</h1>
+    <p class="mt-1 text-xl font-bold text-muted">{c.titleEs}</p>
+    <p class="mt-4 max-w-prose text-lg leading-relaxed">{c.summary}</p>
+  </header>
+
+  <div class="mt-8 grid gap-4 md:grid-cols-[minmax(0,1fr)_16rem]">
+    <section class="rounded-2xl border border-line bg-surface p-5">
+      <h2 class="text-lg font-extrabold">Lernziele <span class="font-semibold text-muted">· Objetivos</span></h2>
+      <ul class="mt-3 space-y-1.5">
+        {
+          c.goals.map((g) => (
+            <li class="flex gap-2">
+              <span aria-hidden="true" class="font-extrabold">✓</span>
+              <span>{g}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+    <nav class="rounded-2xl border border-line bg-surface p-5" aria-label="En este capítulo">
+      <h2 class="text-lg font-extrabold">In diesem Kapitel</h2>
+      <ol class="mt-3 space-y-1 text-sm">
+        {toc.map((t) => <li><a href={`#${t.id}`} class="font-semibold text-muted hover:text-ink">{t.label}</a></li>)}
+      </ol>
+    </nav>
+  </div>
+
+  <!-- Themes: vocabulary + phrases -->
+  {
+    c.themes.map((t) => (
+      <section id={anchor.theme(t.id)} class="mt-14 scroll-mt-24">
+        <p class="text-xs font-extrabold tracking-wider text-muted uppercase">Thema</p>
+        <h2 class="mt-1 text-3xl font-extrabold">{t.title}</h2>
+        <p class="font-bold text-muted">{t.titleEs}</p>
+        <p class="mt-3 max-w-prose leading-relaxed">{t.intro}</p>
+
+        <div class="mt-6 grid gap-6 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+          <div>
+            <h3 class="mb-3 text-lg font-extrabold">
+              Nomen <span class="font-semibold text-muted">· Sustantivos</span>
+            </h3>
+            <div class="overflow-hidden rounded-2xl border border-line bg-surface">
+              <table class="w-full text-left text-sm">
+                <thead class="bg-surface-2 text-xs font-extrabold tracking-wide text-muted uppercase">
+                  <tr>
+                    <th class="px-4 py-2.5">Singular</th>
+                    <th class="hidden px-4 py-2.5 sm:table-cell">Plural</th>
+                    <th class="px-4 py-2.5">Español</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-line">
+                  {t.nouns.map((n) => (
+                    <tr id={anchor.noun(n.de)} class="scroll-mt-24">
+                      <td class="px-4 py-2.5">
+                        <span class="inline-block w-8 font-bold">{n.article}</span>
+                        <span class="font-bold">{n.de}</span>
+                        <span class="block text-xs text-muted sm:hidden">{n.plural ? `die ${n.plural}` : "sin plural"}</span>
+                      </td>
+                      <td class="hidden px-4 py-2.5 sm:table-cell">
+                        {n.plural ? `die ${n.plural}` : <span class="text-muted">—</span>}
+                      </td>
+                      <td class="px-4 py-2.5">{n.es}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <h3 class="mb-3 text-lg font-extrabold">
+              Redemittel <span class="font-semibold text-muted">· Frases útiles</span>
+            </h3>
+            <ul class="space-y-2">
+              {t.phrases.map((p) => (
+                <li class="rounded-xl border border-line bg-surface px-4 py-3">
+                  <span class="font-semibold">{p.de}</span>
+                  <br />
+                  <span class="text-sm text-muted">{p.es}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+    ))
+  }
+
+  <!-- Verbs -->
+  <section id="verben" class="mt-14 scroll-mt-24">
+    <p class="text-xs font-extrabold tracking-wider text-muted uppercase">Wortschatz</p>
+    <h2 class="mt-1 text-3xl font-extrabold">Verben</h2>
+    <p class="font-bold text-muted">Verbos del capítulo con su conjugación</p>
+    <div class="mt-6 grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
+      {verbs.map((v) => <VerbCard client:visible verb={v} />)}
+    </div>
+  </section>
+
+  <!-- Grammar -->
+  <section class="mt-14 space-y-6">
+    {c.grammar.map((g) => <GrammarBlock grammar={g} id={anchor.grammar(g.id)} />)}
+  </section>
+
+  <!-- Pronunciation -->
+  <section id="aussprache" class="mt-14 scroll-mt-24 rounded-2xl border border-line bg-surface p-5 sm:p-7">
+    <p class="text-xs font-extrabold tracking-wider text-muted uppercase">Aussprache · Pronunciación</p>
+    <h2 class="mt-1 text-2xl font-extrabold">{c.pronunciation.title}</h2>
+    <p class="mt-3 max-w-prose leading-relaxed">{c.pronunciation.text}</p>
+    <ul class="mt-4 flex flex-wrap gap-2">
+      {c.pronunciation.examples.map((w) => <li class="rounded-lg bg-surface-2 px-3 py-1.5 font-bold">{w}</li>)}
+    </ul>
+  </section>
+
+  <!-- Exercises -->
+  <section id="uebungen" class="mt-14 scroll-mt-24">
+    <p class="text-xs font-extrabold tracking-wider text-muted uppercase">Übungsbuch</p>
+    <h2 class="mt-1 text-3xl font-extrabold">Übungen</h2>
+    <p class="mb-6 font-bold text-muted">Practica lo aprendido: completa los huecos</p>
+    <Quiz client:visible exercises={c.exercises} />
+  </section>
+
+  <nav class="mt-16 grid gap-4 border-t border-line pt-8 sm:grid-cols-2" aria-label="Capítulos vecinos">
+    {
+      prev ? (
+        <a href={chapterHref(prev)} class="rounded-2xl border border-line bg-surface p-5 hover:border-ink/40">
+          <span class="text-xs font-bold text-muted">← Kapitel {prev.number}</span>
+          <span class="block text-lg font-extrabold">{prev.title}</span>
+        </a>
+      ) : (
+        <span />
+      )
+    }
+    {
+      next && (
+        <a href={chapterHref(next)} class="rounded-2xl border border-line bg-surface p-5 text-right hover:border-ink/40">
+          <span class="text-xs font-bold text-muted">Kapitel {next.number} →</span>
+          <span class="block text-lg font-extrabold">{next.title}</span>
+        </a>
+      )
+    }
+  </nav>
+</Layout>
